@@ -84,3 +84,62 @@ AFNI {afni_ver} [@afni, RRID:SCR_005927].
     ])
 
     return workflow
+
+
+def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf'):
+    """
+        This workflow performs :abbr:`STC (slice-timing correction)` over the input
+        :abbr:`BOLD (blood-oxygen-level dependent)` image.
+
+        .. workflow::
+            :graph2use: orig
+            :simple_form: yes
+
+            from fmriprep.workflows.bold import init_bold_stc_pyslt_wf
+            wf = init_bold_stc_pyslt_wf(
+                metadata={"RepetitionTime": 2.0,
+                        "SliceTiming": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]},
+                )
+
+        **Parameters**
+
+            metadata : dict
+                BIDS metadata for BOLD file
+            name : str
+                Name of workflow (default: ``bold_stc_wf``)
+
+        **Inputs**
+
+            bold_file
+                BOLD series NIfTI file
+            skip_vols
+                Number of non-steady-state volumes detected at beginning of ``bold_file``
+
+        **Outputs**
+
+            stc_file
+                Slice-timing corrected BOLD series NIfTI file
+
+        """
+    workflow = Workflow(name=name)
+    workflow.__desc__ = """BOLD runs were slice-time corrected using `pyslicetime`."""
+    inputnode = pe.Node(niu.IdentityInterface(
+        fields=['bold_file', 'skip_vols']), name='inputnode')
+    outputnode = pe.Node(niu.IdentityInterface(fields=['stc_file']), name='outputnode')
+
+    LOGGER.log(25, 'Slice-timing correction will be included.')
+
+    slice_timing_correction = pe.Node(
+        SliceTime(
+            tr_old=metadata["RepetitionTime"],
+            slicetimes=metadata['SliceTiming'],
+            tr_new=1,
+        ),
+        name='slice_timing_correction')
+
+    workflow.connect([
+        (inputnode, slice_timing_correction, [('bold_file', 'in_file')]),
+        (slice_timing_correction, outputnode, [('out_file', 'stc_file')]),
+    ])
+
+    return workflow
