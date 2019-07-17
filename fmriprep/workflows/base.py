@@ -65,6 +65,7 @@ def init_fmriprep_wf(
     subject_list,
     t2s_coreg,
     task_id,
+    upsample_tr,
     use_aroma,
     use_bbr,
     use_syn,
@@ -119,6 +120,7 @@ def init_fmriprep_wf(
             subject_list=['fmripreptest'],
             t2s_coreg=False,
             task_id='',
+            upsample_tr=0.0,
             use_aroma=False,
             use_bbr=True,
             use_syn=True,
@@ -196,6 +198,8 @@ def init_fmriprep_wf(
             For multi-echo EPI, use the calculated T2*-map for T2*-driven coregistration
         task_id : str or None
             Task ID of BOLD series to preprocess, or ``None`` to preprocess all
+        upsample_tr : float
+            Upsample temporal resolution on bold scans through interpolation
         use_aroma : bool
             Perform ICA-AROMA on MNI-resampled functional series
         use_bbr : bool or None
@@ -254,6 +258,7 @@ def init_fmriprep_wf(
             subject_id=subject_id,
             t2s_coreg=t2s_coreg,
             task_id=task_id,
+            upsample_tr=upsample_tr,
             use_aroma=use_aroma,
             use_bbr=use_bbr,
             use_syn=use_syn,
@@ -305,6 +310,7 @@ def init_single_subject_wf(
     subject_id,
     t2s_coreg,
     task_id,
+    upsample_tr,
     use_aroma,
     use_bbr,
     use_syn,
@@ -360,6 +366,7 @@ def init_single_subject_wf(
             subject_id='test',
             t2s_coreg=False,
             task_id='',
+            upsample_tr=0.0,
             use_aroma=False,
             use_bbr=True,
             use_syn=True,
@@ -441,6 +448,8 @@ def init_single_subject_wf(
             For multi-echo EPI, use the calculated T2*-map for T2*-driven coregistration
         task_id : str or None
             Task ID of BOLD series to preprocess, or ``None`` to preprocess all
+        upsample_tr : float
+            Upsample temporal resolution on bold scans through interpolation
         use_aroma : bool
             Perform ICA-AROMA on MNI-resampled functional series
         use_bbr : bool or None
@@ -612,6 +621,7 @@ It is released under the [CC0]\
             regressors_fd_th=regressors_fd_th,
             regressors_dvars_th=regressors_dvars_th,
             t2s_coreg=t2s_coreg,
+            upsample_tr=upsample_tr,
             use_aroma=use_aroma,
             use_bbr=use_bbr,
             use_syn=use_syn,
