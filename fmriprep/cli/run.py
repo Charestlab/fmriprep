@@ -177,6 +177,8 @@ the spatial normalization """ % (', '.join('"%s"' % s for s in templates()),
     g_conf.add_argument(
         '--dummy-scans', required=False, action='store', default=None, type=int,
         help='Number of non steady state volumes.')
+    g_conf.add_argument('--upsample-tr', action='store', type=float, default=0.0,
+        help='upsample temporal resolution to this TR')
 
     # ICA_AROMA options
     g_aroma = parser.add_argument_group('Specific options for running ICA_AROMA')
@@ -604,6 +606,7 @@ def build_workflow(opts, retval):
         subject_list=subject_list,
         t2s_coreg=opts.t2s_coreg,
         task_id=opts.task_id,
+        upsample_tr=opts.upsample_tr,
         use_aroma=opts.use_aroma,
         use_bbr=opts.use_bbr,
         use_syn=opts.use_syn_sdc,
