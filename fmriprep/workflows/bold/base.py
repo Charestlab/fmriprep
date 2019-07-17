@@ -75,6 +75,7 @@ def init_func_preproc_wf(
     regressors_fd_th,
     reportlets_dir,
     t2s_coreg,
+    upsample_tr
     use_aroma,
     use_bbr,
     use_syn,
@@ -116,6 +117,7 @@ def init_func_preproc_wf(
             regressors_fd_th=0.5,
             reportlets_dir='.',
             t2s_coreg=False,
+            upsample_tr=0.0,
             use_aroma=False,
             use_bbr=True,
             use_syn=True,
@@ -177,6 +179,8 @@ def init_func_preproc_wf(
             Absolute path of a directory in which reportlets will be temporarily stored
         t2s_coreg : bool
             For multiecho EPI, use the calculated T2*-map for T2*-driven coregistration
+        upsample_tr : float
+            Upsample temporal resolution on bold scans through interpolation
         use_aroma : bool
             Perform ICA-AROMA on MNI-resampled functional series
         use_bbr : bool or None
@@ -520,7 +524,11 @@ Non-gridded (surface) resamplings were performed using `mri_vol2surf`
 
     # SLICE-TIME CORRECTION (or bypass) #############################################
     if run_stc is True:  # bool('TooShort') == True, so check True explicitly
-        bold_stc_wf = init_bold_stc_wf(name='bold_stc_wf', metadata=metadata)
+        bold_stc_wf = init_bold_stc_wf(
+            name='bold_stc_wf',
+            metadata=metadata,
+            upsample_tr=upsample_tr
+        )
         workflow.connect([
             (bold_reference_wf, bold_stc_wf, [
                 ('outputnode.skip_vols', 'inputnode.skip_vols')]),

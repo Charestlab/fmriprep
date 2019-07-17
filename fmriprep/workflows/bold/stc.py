@@ -20,10 +20,13 @@ LOGGER = logging.getLogger('nipype.workflow')
 
 
 # pylint: disable=R0914
-def init_bold_stc_wf(metadata, name='bold_stc_wf'):
+def init_bold_stc_wf(metadata, name='bold_stc_wf', upsample_tr=0.0):
     """
     This workflow performs :abbr:`STC (slice-timing correction)` over the input
     :abbr:`BOLD (blood-oxygen-level dependent)` image.
+
+    If ``upsample_tr`` is not zero, pyslicetime will be used for STC, and
+    the temporal resolution will be upsampled using interpolation.
 
     .. workflow::
         :graph2use: orig
@@ -41,6 +44,8 @@ def init_bold_stc_wf(metadata, name='bold_stc_wf'):
             BIDS metadata for BOLD file
         name : str
             Name of workflow (default: ``bold_stc_wf``)
+        upsample_tr : float
+            New TR after upsampling. Ignored if 0.0.
 
     **Inputs**
 
@@ -55,6 +60,9 @@ def init_bold_stc_wf(metadata, name='bold_stc_wf'):
             Slice-timing corrected BOLD series NIfTI file
 
     """
+    if upsample_tr:
+        return init_bold_stc_pyslt_wf(metadata, name, upsample_tr)
+
     workflow = Workflow(name=name)
     workflow.__desc__ = """\
 BOLD runs were slice-time corrected using `3dTshift` from
@@ -86,10 +94,10 @@ AFNI {afni_ver} [@afni, RRID:SCR_005927].
     return workflow
 
 
-def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf'):
+def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf', upsample_tr=0.0):
     """
         This workflow performs :abbr:`STC (slice-timing correction)` over the input
-        :abbr:`BOLD (blood-oxygen-level dependent)` image.
+        :abbr:`BOLD (blood-oxygen-level dependent)` image, using pyslicetime
 
         .. workflow::
             :graph2use: orig
@@ -97,9 +105,12 @@ def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf'):
 
             from fmriprep.workflows.bold import init_bold_stc_pyslt_wf
             wf = init_bold_stc_pyslt_wf(
-                metadata={"RepetitionTime": 2.0,
-                        "SliceTiming": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]},
-                )
+                metadata={
+                    "RepetitionTime": 2.0,
+                    "SliceTiming": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+                },
+                upsample_tr=1.0,
+            )
 
         **Parameters**
 
@@ -107,6 +118,8 @@ def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf'):
                 BIDS metadata for BOLD file
             name : str
                 Name of workflow (default: ``bold_stc_wf``)
+            upsample_tr : float
+                New TR after upsampling. Ignored if 0.0.
 
         **Inputs**
 
@@ -127,13 +140,13 @@ def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf'):
         fields=['bold_file', 'skip_vols']), name='inputnode')
     outputnode = pe.Node(niu.IdentityInterface(fields=['stc_file']), name='outputnode')
 
-    LOGGER.log(25, 'Slice-timing correction will be included.')
+    LOGGER.log(25, 'Slice-timing correction will be performed with pyslicetime.')
 
     slice_timing_correction = pe.Node(
         SliceTime(
             tr_old=metadata["RepetitionTime"],
             slicetimes=metadata['SliceTiming'],
-            tr_new=1,
+            tr_new=upsample_tr,
         ),
         name='slice_timing_correction')
 
