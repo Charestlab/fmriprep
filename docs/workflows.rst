@@ -406,6 +406,10 @@ If a :abbr:`BOLD (blood-oxygen level-dependent)` series has fewer than
 5 usable (steady-state) volumes, slice time correction will be disabled
 for that run.
 
+If the ``--upsample-tr`` command line argument is set to a value higher than 0,
+Slice time correction is instead performed with pyslicetime,
+and the temporal resolution will be upsampled towards the given TR.
+
 
 Susceptibility Distortion Correction (SDC)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
