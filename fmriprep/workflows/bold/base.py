@@ -75,7 +75,7 @@ def init_func_preproc_wf(
     regressors_fd_th,
     reportlets_dir,
     t2s_coreg,
-    upsample_tr
+    upsample_tr,
     use_aroma,
     use_bbr,
     use_syn,
