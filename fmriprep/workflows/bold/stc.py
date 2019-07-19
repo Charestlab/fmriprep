@@ -148,6 +148,7 @@ def init_bold_stc_pyslt_wf(metadata, name='bold_stc_wf', upsample_tr=0.0):
             tr_old=metadata["RepetitionTime"],
             slicetimes=metadata['SliceTiming'],
             tr_new=upsample_tr,
+            out_file='slicetime.nii.gz'
         ),
         name='slice_timing_correction')
 
