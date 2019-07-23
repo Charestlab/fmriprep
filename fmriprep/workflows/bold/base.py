@@ -604,8 +604,9 @@ Non-gridded (surface) resamplings were performed using `mri_vol2surf`
         (boldbuffer, bold_split, [('bold_file', 'in_file')]),
         # HMC
         (bold_reference_wf, bold_hmc_wf, [
-            ('outputnode.raw_ref_image', 'inputnode.raw_ref_image'),
-            ('outputnode.bold_file', 'inputnode.bold_file')]),
+            ('outputnode.raw_ref_image', 'inputnode.raw_ref_image')]),
+        (boldbuffer, bold_hmc_wf, [
+            ('bold_file', 'inputnode.bold_file')]),
         (bold_reference_wf, summary, [
             ('outputnode.algo_dummy_scans', 'algo_dummy_scans')]),
         # EPI-T1 registration workflow
